@@ -19,7 +19,7 @@ def main(port, start, stop):
         min_dist = 999999
 
         try:
-            scan = next(lidar.iter_scans())
+            scan = next(lidar.iter_scans(max_buf_meas=200, min_len=3))
             for i, sample in enumerate(scan):
                 if int(sample[1]) > start and int(sample[1]) < stop:
                     print(str(sample[2]))
