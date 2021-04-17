@@ -2,12 +2,22 @@ from rplidar import RPLidar, RPLidarException
 import click
 import time
 import redis
+from typing import Dict, Tuple
+from serial.tools import list_ports
 
+def get_device_com(comports, vid_pid_tuple: Tuple[int, int]):
+    device_com = [com.device for com in comports
+                  if (com.vid, com.pid) == vid_pid_tuple]
+    return device_com[0] if len(device_com) else None
+    
+LIDAR_VID_PID = (4292, 60000)
+comports = list(list_ports.comports())
+lidar_dev_com = get_device_com(comports, LIDAR_VID_PID)
 client = redis.Redis()
 
 
 @click.command()
-@click.argument("port")
+@click.option("--port", type=str, default=lidar_dev_com)
 @click.argument("start", type=click.INT)
 @click.argument("stop", type=click.INT)
 def main(port, start, stop):
